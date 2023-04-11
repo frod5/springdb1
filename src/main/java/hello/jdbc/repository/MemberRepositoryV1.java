@@ -15,6 +15,10 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class MemberRepositoryV1 {
 
+    //DriverManagerDataSource HikariDataSource 로 변경해도 MemberRepositoryV1 의 코드는 전혀
+    //변경하지 않아도 된다. MemberRepositoryV1 는 DataSource 인터페이스에만 의존하기 때문이다.
+    //이것이 DataSource 를 사용하는 장점이다.(DI + OCP)
+    //DataSource는 커넥션을 획득하는 방법을 추상화한 인터페이스
     private final DataSource dataSource;
 
     public MemberRepositoryV1(DataSource dataSource) {
