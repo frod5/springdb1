@@ -4,7 +4,6 @@ import hello.jdbc.domain.Member;
 import hello.jdbc.repository.MemberRepositoryV3;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
@@ -24,11 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * 트랜잭션 - @Transactional AOP
+ * 트랜잭션 - DataSource, transactionManager 자동 등록
  */
 @Slf4j
 @SpringBootTest  //기존에는 스프링을 띄워서 테스트한것이 아니어서 @Transactional이 동작히지 않는다. 그래서 스프링테스트를 하기위해 선언.
-public class MemberServiceV3_3Test {
+public class MemberServiceV3_4Test {
 
     public static final String MEMBER_A = "memberA";
     public static final String MEMBER_B = "memberB";
@@ -40,19 +39,17 @@ public class MemberServiceV3_3Test {
     @Autowired
     private MemberServiceV3_3 memberService;
 
-    @TestConfiguration  //스프링 테스트를 하기위해 빈 등록
+    @TestConfiguration
     static class TestConfig {
-        @Bean
-        DataSource dataSource () {
-            return new DriverManagerDataSource(URL,USERNAME,PASSWORD);
-        }
-        @Bean
-        PlatformTransactionManager transactionManager() {
-            return new DataSourceTransactionManager(dataSource());
+
+        //DataSource와 transactionManager를 스프링 부트가 application.properties에 있는 지정된 속성을 참고하여 자동으로 빈을 등록해준다.
+        private final DataSource dataSource;
+        public TestConfig(DataSource dataSource) {
+            this.dataSource = dataSource;
         }
         @Bean
         MemberRepositoryV3 memberRepositoryV3() {
-            return new MemberRepositoryV3(dataSource());
+            return new MemberRepositoryV3(dataSource);
         }
         @Bean
         MemberServiceV3_3 memberServiceV3_3() {
